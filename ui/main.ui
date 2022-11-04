@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>710</width>
+    <height>421</height>
+   </rect>
+  </property>
+  <property name="font">
+   <font>
+    <family>Museo Sans Cyrl 300</family>
+   </font>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="loginLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>691</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Museo Sans Cyrl 500</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Вы вошли в %s</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="trackLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>691</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Museo Sans Cyrl 500</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Текущая песня в очереди: %s</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>110</y>
+      <width>451</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Museo Sans Cyrl 500</family>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Прослушанные песни:</string>
+    </property>
+   </widget>
+   <widget class="QTableWidget" name="table">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>140</y>
+      <width>691</width>
+      <height>251</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="updateButton">
+    <property name="geometry">
+     <rect>
+      <x>570</x>
+      <y>110</y>
+      <width>131</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Обновить</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>710</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>Другое</string>
+    </property>
+    <addaction name="action"/>
+   </widget>
+   <addaction name="menu"/>
+  </widget>
+  <action name="action">
+   <property name="text">
+    <string>Выйти</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
