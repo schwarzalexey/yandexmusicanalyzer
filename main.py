@@ -14,7 +14,7 @@ import sqlite3
 class AuthWindow(QMainWindow):
     def __init__(self, mode):
         super().__init__()
-        uic.loadUi('auth.ui', self)
+        uic.loadUi('ui/auth.ui', self)
         self.setWindowTitle("YMAnalyzer")
         self.authButton.clicked.connect(self.run)
         self.labelError.setVisible(False)
@@ -23,7 +23,7 @@ class AuthWindow(QMainWindow):
 
     def run(self):
         hwid = str(subprocess.check_output('wmic csproduct get uuid')).split('\\r\\n')[1].strip('\\r').strip()
-        connect = sqlite3.connect('ui/mainDB.db')
+        connect = sqlite3.connect('mainDB.db')
         cursor = connect.cursor()
         if self.mode == 'start':
             result = cursor.execute("""SELECT id FROM clients WHERE hwid = ?""", (hwid,)).fetchone()
@@ -85,6 +85,9 @@ class MainWindow(QMainWindow):
         self.loginLabel.setText(f'Вы вошли в {self.client.account_status().account.login}.')
         self.trackLabel.setText('Текущая песня в очереди: Нет')
         self.updateButton.clicked.connect(self.updateTableAsync)
+        self.igButton.toggled.connect(self.show_graphics)
+        self.statButton.toggled.connect(self.show_table)
+
 
         self.main_loop = asyncio.get_event_loop()
         self.thread = threading.Thread(target=self.loop_to_thread, args=(self.main_loop,))
@@ -176,6 +179,16 @@ class MainWindow(QMainWindow):
             self.table.setItem(i, 3, QTableWidgetItem(str(count)))
         self.table.resizeColumnsToContents()
 
+    def show_table(self):
+        self.label.setVisible(False)
+        self.table.setVisible(False)
+        self.updateButton.setVisible(False)
+
+    def show_graphics(self):
+        self.label.setVisible(True)
+        self.table.setVisible(True)
+        self.updateButton.setVisible(True)
+
 
 def except_hook(cls, exception, traceback):
     sys.__excepthook__(cls, exception, traceback)
@@ -188,4 +201,4 @@ if __name__ == '__main__':
     sys.exit(app.exec_())
 
 
-#TODO: вывод таблицы прослушанных треков с сортировкой по количеству/имени, и всякие диаграммы жанров там и т.д и т.п, удалённая бд
+#TODO: всякие диаграммы жанров там и т.д и т.п, удалённая бд
