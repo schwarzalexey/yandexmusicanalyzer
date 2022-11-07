@@ -1,7 +1,5 @@
 import sys
-
-import yandex_music
-from PyQt5 import uic  # Импортируем uic
+from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem
 from yandex_music import Client, ClientAsync
 from auth import get_token
@@ -9,6 +7,11 @@ import asyncio
 import threading
 import subprocess
 import sqlite3
+import collections
+# import matplotlib
+# from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+# from matplotlib.figure import Figure
+# matplotlib.use('Qt5Agg')
 
 
 class AuthWindow(QMainWindow):
@@ -87,12 +90,10 @@ class MainWindow(QMainWindow):
         self.updateButton.clicked.connect(self.updateTableAsync)
         self.igButton.toggled.connect(self.show_graphics)
         self.statButton.toggled.connect(self.show_table)
-
-
+        self.authWindow = None
         self.main_loop = asyncio.get_event_loop()
         self.thread = threading.Thread(target=self.loop_to_thread, args=(self.main_loop,))
         self.thread.start()
-
 
     async def get_track(self):
         def get_label(track):
@@ -151,6 +152,11 @@ class MainWindow(QMainWindow):
         self.main_loop.create_task(self.updateTable())
 
     async def updateTable(self):
+        async def async_range(count):
+            for i in range(count):
+                yield i
+                await asyncio.sleep(0.0)
+
         connect = sqlite3.connect('mainDB.db')
         cursor = connect.cursor()
         rows = cursor.execute("""SELECT * FROM listened_songs 
@@ -165,7 +171,7 @@ class MainWindow(QMainWindow):
         self.table.horizontalHeaderItem(2).setToolTip("Жанр")
         self.table.horizontalHeaderItem(3).setToolTip("Кол-во прослушиваний")
         client = await ClientAsync(self.token).init()
-        for i in range(len(rows)):
+        async for i in async_range(len(rows)):
             song_id = rows[i][2]
             count = rows[i][3]
             track = await client.tracks(song_id)
@@ -192,6 +198,7 @@ class MainWindow(QMainWindow):
 
 def except_hook(cls, exception, traceback):
     sys.__excepthook__(cls, exception, traceback)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
