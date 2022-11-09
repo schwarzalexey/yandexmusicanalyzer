@@ -7,15 +7,7 @@ from selenium.webdriver.remote.command import Command
 from webdriver_manager.chrome import ChromeDriverManager
 
 
-def is_active(driver):
-    try:
-        driver.execute(Command.GET_ALL_COOKIES)
-        return True
-    except Exception:
-        return False
-
-
-def get_token():
+def getToken():
     capabilities = DesiredCapabilities.CHROME
     capabilities["loggingPrefs"] = {"performance": "ALL"}
     capabilities['goog:loggingPrefs'] = {'performance': 'ALL'}
@@ -24,7 +16,7 @@ def get_token():
 
     token = None
 
-    while token is None and is_active(driver) and driver.session_id is not None:
+    while token is None and driver.session_id is not None:
         sleep(1)
         try:
             logs_raw = driver.get_log("performance")
