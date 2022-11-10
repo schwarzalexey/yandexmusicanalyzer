@@ -2,11 +2,10 @@ import sys
 import subprocess
 import sqlite3
 from auth import getToken
-from PyQt5 import uic
-from PyQt5.QtWidgets import *
-from PyQt5.QtCore import *
-from PyQt5 import Qt
-from PyQt5.QtChart import QChart, QChartView, QPieSeries
+from PyQt6 import uic, QtCore
+from PyQt6.QtWidgets import *
+from PyQt6.QtCore import *
+from PyQt6.QtCharts import QChart, QChartView, QPieSeries
 from yandex_music import Client, Track
 
 
@@ -143,7 +142,6 @@ class WorkerChart(QObject):
                     otherSum += int(pair[1])
                 else:
                     temporaryList[i] += (True,)
-            print(temporaryList)
             temporaryList.append(("Other artists", otherSum, True))
             artistsDict = {} # name: count for name, count, flag in temporaryList if flag
             for dataTuple in temporaryList:
@@ -160,7 +158,7 @@ class WorkerChart(QObject):
             self.genreListSignal.emit(genresChartSeries)
             artistChartSeries = artistChartData()
             self.artistListSignal.emit(artistChartSeries)
-            Qt.QThread.msleep(30000)
+            QtCore.QThread.msleep(30000)
         self.connect.close()
         self.finishedSignal.emit()
 
@@ -231,7 +229,7 @@ class WorkerTrack(QObject):
                     previousTrack = track
             except Exception as e:
                 print(e)
-            Qt.QThread.msleep(10000)
+            QtCore.QThread.msleep(10000)
         connect.close()
         self.finishedSignal.emit()
 
@@ -244,7 +242,7 @@ class MainWindow(QMainWindow):
         self.token = token
         self.action.triggered.connect(self.logout)
         self.client = Client(self.token).init()
-        self.loginLabel.setText(f'Вы вошли в {self.client.account_status().account.login}.')
+        self.loginLabel.setText(f'Вы вошли в аккаунт {self.client.account_status().account.login}.')
         self.trackLabel.setText('Текущая песня в очереди: Нет')
         self.updateButton.clicked.connect(self.startUpdateTableThread)
         self.igButton.toggled.connect(self.show_graphics)
@@ -328,9 +326,9 @@ class MainWindow(QMainWindow):
         chart = QChart()
         chart.addSeries(series)
         chart.createDefaultAxes()
-        chart.setAnimationOptions(QChart.SeriesAnimations)
+        chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
         chart.setTitle("Наиболее любимые жанры")
-        chart.legend.setInteractive(True)
+        chart.legend().setInteractive(True)
         self.chartView = QChartView(chart)
         self.layout = QHBoxLayout(self.genreChartWidget)
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -343,9 +341,9 @@ class MainWindow(QMainWindow):
         chart = QChart()
         chart.addSeries(series)
         chart.createDefaultAxes()
-        chart.setAnimationOptions(QChart.SeriesAnimations)
+        chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
         chart.setTitle("Наиболее любимые артисты")
-        chart.legend.setInteractive(True)
+        chart.legend().setInteractive(True)
         self.chartView = QChartView(chart)
         self.layout = QHBoxLayout(self.artistChartWidget)
         self.layout.setContentsMargins(0, 0, 0, 0)
@@ -377,4 +375,4 @@ if __name__ == '__main__':
     ex = AuthWindow('start')
     ex.show()
     sys.excepthook = except_hook
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
