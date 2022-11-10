@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>710</width>
-    <height>434</height>
+    <height>431</height>
    </rect>
   </property>
   <property name="font">
@@ -150,12 +150,22 @@
      </attribute>
     </widget>
    </widget>
-   <widget class="QWidget" name="chartWidget" native="true">
+   <widget class="QWidget" name="genreChartWidget" native="true">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>120</y>
-      <width>281</width>
+      <width>341</width>
+      <height>281</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QWidget" name="artistChartWidget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>359</x>
+      <y>120</y>
+      <width>341</width>
       <height>281</height>
      </rect>
     </property>
@@ -166,7 +176,8 @@
    <zorder>label</zorder>
    <zorder>table</zorder>
    <zorder>updateButton</zorder>
-   <zorder>chartWidget</zorder>
+   <zorder>genreChartWidget</zorder>
+   <zorder>artistChartWidget</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -174,7 +185,7 @@
      <x>0</x>
      <y>0</y>
      <width>710</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

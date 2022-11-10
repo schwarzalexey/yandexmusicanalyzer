@@ -122,17 +122,35 @@ class WorkerChart(QObject):
             for artists, count in artistsAndCountList:
                 if len(artists) != 1:
                     for artist in artists:
-                        if artist in artistsDict.keys():
-                            artistsDict[artist] += int(count)
+                        if artist.name in artistsDict.keys():
+                            artistsDict[artist.name] += int(count)
                         else:
-                            artistsDict.update({artist: int(count)})
+                            artistsDict.update({artist.name: int(count)})
                 else:
                     artist = artists[0]
-                    if artist in artistsDict.keys():
-                        artistsDict[artist] += int(count)
+                    if artist.name in artistsDict.keys():
+                        artistsDict[artist.name] += int(count)
                     else:
-                        artistsDict.update({artist: int(count)})
-            # Доделать до ума добавление в раздел Other (<5% от общих прослушанных артистов)
+                        artistsDict.update({artist.name: int(count)})
+            overallSum = sum(artistsDict.values())
+            otherSum = 0
+            artistsDict = dict(sorted(artistsDict.items(), key=lambda item: item[1]))
+            temporaryList = list(artistsDict.items())
+            for i in range(len(artistsDict)):
+                pair = temporaryList[i]
+                if int(pair[1]) / overallSum < 0.1:
+                    temporaryList[i] += (False,)
+                    otherSum += int(pair[1])
+                else:
+                    temporaryList[i] += (True,)
+            print(temporaryList)
+            temporaryList.append(("Other artists", otherSum, True))
+            artistsDict = {} # name: count for name, count, flag in temporaryList if flag
+            for dataTuple in temporaryList:
+                if not dataTuple[2]:
+                    continue
+                artistsDict.update({dataTuple[0]: dataTuple[1]})
+            del temporaryList
             artistsList = list(sorted(artistsDict.items(), key=lambda item: item[1], reverse=True))
             return artistsList
 
@@ -140,6 +158,8 @@ class WorkerChart(QObject):
         while self.running:
             genresChartSeries = genreChartData()
             self.genreListSignal.emit(genresChartSeries)
+            artistChartSeries = artistChartData()
+            self.artistListSignal.emit(artistChartSeries)
             Qt.QThread.msleep(30000)
         self.connect.close()
         self.finishedSignal.emit()
@@ -229,7 +249,8 @@ class MainWindow(QMainWindow):
         self.updateButton.clicked.connect(self.startUpdateTableThread)
         self.igButton.toggled.connect(self.show_graphics)
         self.statButton.toggled.connect(self.show_table)
-        self.chartWidget.setVisible(False)
+        self.genreChartWidget.setVisible(False)
+        self.artistChartWidget.setVisible(False)
         self.authWindow = None
         self.chartView = None
         self.layout = None
@@ -239,6 +260,7 @@ class MainWindow(QMainWindow):
         self.workerChart.moveToThread(self.objThread)
         self.workerChart.finishedSignal.connect(self.objThread.exit)
         self.workerChart.genreListSignal.connect(self.onGenrePieChartUpdate)
+        self.workerChart.artistListSignal.connect(self.onArtistPieChartUpdate)
         self.objThread.started.connect(self.workerChart.runThread)
         self.objThread.start()
         # --------------------------- Track updater
@@ -308,8 +330,24 @@ class MainWindow(QMainWindow):
         chart.createDefaultAxes()
         chart.setAnimationOptions(QChart.SeriesAnimations)
         chart.setTitle("Наиболее любимые жанры")
+        chart.legend.setInteractive(True)
         self.chartView = QChartView(chart)
-        self.layout = QHBoxLayout(self.chartWidget)
+        self.layout = QHBoxLayout(self.genreChartWidget)
+        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.addWidget(self.chartView)
+
+    def onArtistPieChartUpdate(self, data):
+        series = QPieSeries()
+        for genre in data:
+            series.append(genre[0], genre[1])
+        chart = QChart()
+        chart.addSeries(series)
+        chart.createDefaultAxes()
+        chart.setAnimationOptions(QChart.SeriesAnimations)
+        chart.setTitle("Наиболее любимые артисты")
+        chart.legend.setInteractive(True)
+        self.chartView = QChartView(chart)
+        self.layout = QHBoxLayout(self.artistChartWidget)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.addWidget(self.chartView)
 
@@ -318,14 +356,16 @@ class MainWindow(QMainWindow):
         self.table.setVisible(False)
         self.updateButton.setVisible(False)
         # ---------------------------
-        self.chartWidget.setVisible(True)
+        self.genreChartWidget.setVisible(True)
+        self.artistChartWidget.setVisible(True)
 
     def show_graphics(self):
         self.label.setVisible(True)
         self.table.setVisible(True)
         self.updateButton.setVisible(True)
         # ---------------------------
-        self.chartWidget.setVisible(False)
+        self.genreChartWidget.setVisible(False)
+        self.artistChartWidget.setVisible(False)
 
 
 def except_hook(cls, exception, traceback):
