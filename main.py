@@ -134,12 +134,12 @@ class WorkerChart(QObject):
             overallSum = sum(artistsDict.values())
             otherSum = 0
             temporaryList = list(sorted(artistsDict.items(), key=lambda item: item[1]))
-            for pair in temporaryList:
-                if int(pair[1]) / overallSum < 0.1:
-                    pair += (False,)
+            for i in range(len(temporaryList)):           
+                if int(temporaryList[i][1]) / overallSum < 0.05:
+                    temporaryList[i] += (False,)
                     otherSum += int(pair[1])
                 else:
-                    pair += (True,)
+                    temporaryList[i] += (True,)
             temporaryList.append(("Other artists", otherSum, True))
             artistsDict = {} # name: count for name, count, flag in temporaryList if flag
             for dataTuple in temporaryList:
